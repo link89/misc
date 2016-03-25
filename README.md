@@ -1,1 +1,2 @@
-# misc
+# table of contents
++ vimrc
