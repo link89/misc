@@ -1,0 +1,5 @@
+setup JitsiProvS server at first time:
+./jitsiprovs -n --setup --db_ip='127.0.0.1' --db_port=3306 --db_admin=root --db_apwd=xxxx
+
+run  JitsiProvS service
+./jitsiprovs -n --db_ip='127.0.0.1' --db_port=3306
