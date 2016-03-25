@@ -3,3 +3,6 @@ setup JitsiProvS server at first time:
 
 run  JitsiProvS service
 ./jitsiprovs -n --db_ip='127.0.0.1' --db_port=3306
+
+example provisioning url
+http://127.0.0.1:8080/jitsiprovs/?username=${username}&password=${password}&os=${osname}&hw=${hwaddr}&uuid=${uuid}&hostname=${hostname}&ipaddr=${ipaddr}
