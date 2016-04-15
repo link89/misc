@@ -1,6 +1,9 @@
 # distutils: language = c
 # distutils: sources = foo.c
 
+from libc.stdio cimport FILE, fclose, fputs, fgets
+from posix.stdio cimport fmemopen
+
 cdef extern from "foo.h":
     ctypedef struct Foo:
         int a
@@ -19,3 +22,18 @@ def py_sum1(Foo x):
 # error: Cannot convert Python object argument to type 'Foo *'
 # def py_sum2(Foo *x):
 #     return sum2(x)
+
+# it's wild that when running in OSX, an error will occur at module import
+# >>> import py_foo
+# Traceback (most recent call last):
+#       File "<stdin>", line 1, in <module>
+#       ImportError: dlopen(./py_foo.so, 2): Symbol not found: _fmemopen
+#
+# but it's ok at gnu/linux
+def buffer_file():
+    cdef char buffer[1024]
+    cdef FILE* f = fmemopen(buffer, 1024, 'w')
+    fputs("hello world", f)
+    print(buffer)
+    fclose(f)
+    return buffer
