@@ -1,5 +1,6 @@
 # distutils: language = c
 # distutils: sources = foo.c
+# -*- coding: utf-8 -*-
 
 from libc.stdio cimport FILE, fclose, fputs, fgets
 from posix.stdio cimport fmemopen
@@ -44,5 +45,18 @@ def py_c_string():
     cdef bytes py_string = c_string()
     return py_string
 
-def py_print_string(bytes py_string):
+# NOTICE the following function calls (test under python 2.7)
+# py_print_str('123')       success
+# py_print_str('你好')      success
+# py_print_unicode(u'123')  success
+# py_print_unicode(u'你好') fail
+
+# it turns out that const char* in c is equivalent to bytes in cython
+# so don't use unicode when you need call c functions
+# I didn't test them in python 3, try bytearray when you have problems
+
+def py_print_str(bytes py_string):
+    print_string(py_string)
+
+def py_print_unicode(unicode py_string):
     print_string(py_string)

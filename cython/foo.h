@@ -9,6 +9,7 @@ extern "C"
 typedef struct {
     int a;
     int b;
+    char ip[32];
 } Foo;
 
 Foo ctor(int a, int b);
