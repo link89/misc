@@ -12,6 +12,8 @@ cdef extern from "foo.h":
     Foo ctor(int a, int b)
     int sum1(Foo x)
     int sum2(Foo *x)
+    const char* c_string()
+    void print_string(const char *str)
 
 def py_ctor(int a, int b):
     return ctor(a, b)
@@ -37,3 +39,10 @@ def buffer_file():
     print(buffer)
     fclose(f)
     return buffer
+
+def py_c_string():
+    cdef bytes py_string = c_string()
+    return py_string
+
+def py_print_string(bytes py_string):
+    print_string(py_string)

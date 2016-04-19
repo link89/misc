@@ -14,6 +14,8 @@ typedef struct {
 Foo ctor(int a, int b);
 int sum1(Foo x);
 int sum2(Foo* x);
+const char* c_string(void);
+void print_string(const char *str);
 
 #ifdef __cplusplus
 }
