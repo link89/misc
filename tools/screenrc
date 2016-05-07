@@ -1,0 +1,6 @@
+defencoding UTF-8
+encoding UTF-8 UTF-8
+vbell off
+caption always
+caption string "%{.bW}[%Y/%m/%d %c] %-w%{.rW}[%n %t]%{-}%+w"
+termcapinfo xterm* ti@:te@
