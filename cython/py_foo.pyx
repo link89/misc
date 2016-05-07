@@ -3,21 +3,29 @@
 # -*- coding: utf-8 -*-
 
 from libc.stdio cimport FILE, fclose, fputs, fgets
+from libc.string cimport strcpy
 from posix.stdio cimport fmemopen
 
 cdef extern from "foo.h":
     ctypedef struct Foo:
         int a
         int b
+        char[32] s
 
     Foo ctor(int a, int b)
     int sum1(Foo x)
     int sum2(Foo *x)
     const char* c_string()
     void print_string(const char *str)
+    void print_foo(Foo x)
+    void set_foo_s(Foo *x, const char *str)
 
-def py_ctor(int a, int b):
-    return ctor(a, b)
+def py_ctor(int a, int b, bytes s):
+    x = ctor(a, b)
+    cdef char[32] t
+    strcpy(t, s)
+    x.s = t
+    return x
 
 def py_sum1(Foo x):
     return sum1(x)
@@ -60,3 +68,6 @@ def py_print_str(bytes py_string):
 
 def py_print_unicode(unicode py_string):
     print_string(py_string)
+
+def py_print_foo(Foo x):
+    print_foo(x)

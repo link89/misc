@@ -1,5 +1,6 @@
+#include <stdio.h>
+#include <string.h>
 #include "foo.h"
-#include "stdio.h"
 
 Foo ctor(int a, int b) {
     Foo x;
@@ -22,5 +23,15 @@ const char* c_string() {
 
 void print_string(const char* str) {
     printf("%s\n", str);
+    return;
+}
+
+void print_foo(Foo x) {
+    printf("%d, %d, %s\n", x.a, x.b, x.s);
+    return;
+}
+
+void set_foo_s(Foo *x, const char *str) {
+    strcpy(x->s, str);
     return;
 }
