@@ -1,5 +1,6 @@
 # table of contents
 + vimrc
++ screenrc
 + JitsiProvS requirements
 + nginx configuration
 + supervisor configuration
