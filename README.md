@@ -6,3 +6,4 @@
 + supervisor configuration
 + cython toy project
 + mysql benchmark
++ couchdb
