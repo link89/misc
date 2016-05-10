@@ -1,0 +1,24 @@
+gp:gproc[ap]
+ai:agent_iface[ap]
+af:agent_fsm[ap]
+/cf:call_fsm[avx]
+cl:call_listener[ap]
+
+[c Init]
+ai:af.login(4001, agent_iface_pid)
+af:gp.reg(4001)
+[/c]
+
+[c AutoIn]
+cl:af.Publish CREATE(B, 4001) By Key: B, 4001
+af:cf.new(4001, agent_iface_pid)
+cf:gp.reg(B)
+cf:ai.ringing(B)
+cl:cf.Publish ANSWER(B, 4001) By Key: B &
+cl:cf.Publish BRIDGE(B, 4001) By Key: B &
+cf:ai.bridged(B)
+cl:cf.Publish DESTROY(B, 4001) By Key: B, 4001 &
+cf:ai.cleared(B)
+cf:stop
+cl:af.Publish DESTROY(B, 4001) By Key: B, 4001
+[/c]
