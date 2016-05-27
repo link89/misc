@@ -7,3 +7,5 @@
 + cython toy project
 + mysql benchmark
 + couchdb
++ sdedit example
++ packetfence/freeradius lockout policy
