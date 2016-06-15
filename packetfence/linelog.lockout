@@ -1,0 +1,5 @@
+linelog log_lockout {
+	filename = ${logdir}/lockout.log
+	format = "user %{User-Name} device %{Calling-Station-Id} is lockout"
+	permissions = 0600
+}
