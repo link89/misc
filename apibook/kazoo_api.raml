@@ -1,0 +1,46 @@
+#%RAML 0.8
+title: Kazoo API 认证
+version: v1
+baseUri: http://{hostname}/{version}
+baseUriParameters:
+  hostname:
+    description: 服务主机名
+
+mediaType:  application/json
+
+/api_auth:
+  description: 描述认证令牌(auth_token)生成方法
+  put:
+    description: 使用 api_key 生成 auth_token
+    body:
+      application/json:
+        schema: |
+          {
+            "$schema": "http://json-schema.org/draft-04/schema#",
+            "id": "http://example.com",
+            "type": "object",
+            "properties": {
+              "data": {
+                "id": "http://example.com/data",
+                "type": "object",
+                "properties": {
+                  "api_key": {
+                    "id": "http://example.com/data/api_key",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "api_key"
+                ]
+              }
+            },
+            "required": [
+              "data"
+            ]
+          }
+        example: |
+          {
+            "data" : {
+              "api_key" : "abcdefg1234567"
+            }
+          }
