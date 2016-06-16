@@ -17,7 +17,7 @@ pip install celery[redis]
 # workaround for import fail
 pip install airflow[hive]
 
-# if pysqlite install fail, run this
+# if airflow[mysql] fail to install ,try this
 yum install mysql-devel
 
 # In CentOS , if you saw pysqlite import _sqlite fail,
