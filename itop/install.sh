@@ -13,3 +13,6 @@ unzip ~/iTop-2.2.1-2658.zip
 
 # chown to apache
 chown -R apache web
+
+# NOTICE: when install on nginx, you should mannualy change
+# app_root_url to domain name (default is localhost)
