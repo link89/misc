@@ -1,4 +1,4 @@
-CREATE TABLE acc_auth_reject (
+CREATE TABLE auth_reject (
     id int(10) NOT NULL auto_increment,
     username varchar(64) NOT NULL default '',
     calling_station_id varchar(50) NOT NULL default '',
