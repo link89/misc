@@ -1,3 +1,7 @@
+# cx_Oracle Chinese support
+import os
+os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
+
 import cx_Oracle
 
 host = '127.0.0.1'
