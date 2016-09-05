@@ -1,154 +1,116 @@
-#! /bin/sh
+#!/bin/bash
+#
+# supervisord   Startup script for the Supervisor process control system
+#
+# Author:       Mike McGrath <mmcgrath@redhat.com> (based off yumupdatesd)
+#               Jason Koppe <jkoppe@indeed.com> adjusted to read sysconfig,
+#                   use supervisord tools to start/stop, conditionally wait
+#                   for child processes to shutdown, and startup later
+#               Erwan Queffelec <erwan.queffelec@gmail.com>
+#                   make script LSB-compliant
+#
+# chkconfig:    345 83 04
+# description: Supervisor is a client/server system that allows \
+#   its users to monitor and control a number of processes on \
+#   UNIX-like operating systems.
+# processname: supervisord
+# config: /etc/supervisord.conf
+# config: /etc/sysconfig/supervisord
+# pidfile: /var/run/supervisord.pid
+#
 ### BEGIN INIT INFO
-# Provides:          supervisord
-# Required-Start:    $remote_fs
-# Required-Stop:     $remote_fs
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Example initscript
-# Description:       This file should be used to construct scripts to be
-#                    placed in /etc/init.d.
+# Provides: supervisord
+# Required-Start: $all
+# Required-Stop: $all
+# Short-Description: start and stop Supervisor process control system
+# Description: Supervisor is a client/server system that allows
+#   its users to monitor and control a number of processes on
+#   UNIX-like operating systems.
 ### END INIT INFO
 
-# Author: Dan MacKinlay <danielm@phm.gov.au>
-# Based on instructions by Bertrand Mathieu
-# http://zebert.blogspot.com/2009/05/installing-django-solr-varnish-and.html
+# Source function library
+. /etc/rc.d/init.d/functions
 
-# Do NOT "set -e"
+# Source system settings
+if [ -f /etc/sysconfig/supervisord ]; then
+    . /etc/sysconfig/supervisord
+fi
 
-# PATH should only include /usr/* if it runs after the mountnfs.sh script
-PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC="Description of the service"
-NAME=supervisord
-DAEMON=/usr/local/bin/supervisord
-DAEMON_ARGS=""
-PIDFILE=/var/run/$NAME.pid
-SCRIPTNAME=/etc/init.d/$NAME
+# Path to the supervisorctl script, server binary,
+# and short-form for messages.
+supervisorctl=/usr/bin/supervisorctl
+supervisord=${SUPERVISORD-/usr/bin/supervisord}
+prog=supervisord
+pidfile=${PIDFILE-/var/run/supervisord.pid}
+lockfile=${LOCKFILE-/var/lock/subsys/supervisord}
+STOP_TIMEOUT=${STOP_TIMEOUT-60}
+OPTIONS="${OPTIONS--c /etc/supervisord.conf}"
+RETVAL=0
 
-# Exit if the package is not installed
-[ -x "$DAEMON" ] || exit 0
-
-# Read configuration variable file if it is present
-[ -r /etc/default/$NAME ] && . /etc/default/$NAME
-
-# Load the VERBOSE setting and other rcS variables
-. /lib/init/vars.sh
-
-# Define LSB log_* functions.
-# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
-. /lib/lsb/init-functions
-
-#
-# Function that starts the daemon/service
-#
-do_start()
-{
-	# Return
-	#   0 if daemon has been started
-	#   1 if daemon was already running
-	#   2 if daemon could not be started
-	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON --test > /dev/null \
-		|| return 1
-	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON -- \
-		$DAEMON_ARGS \
-		|| return 2
-	# Add code here, if necessary, that waits for the process to be ready
-	# to handle requests from services started subsequently which depend
-	# on this one.  As a last resort, sleep for some time.
+start() {
+    echo -n $"Starting $prog: "
+    daemon --pidfile=${pidfile} $supervisord $OPTIONS
+    RETVAL=$?
+    echo
+    if [ $RETVAL -eq 0 ]; then
+        touch ${lockfile}
+        $supervisorctl $OPTIONS status
+    fi
+    return $RETVAL
 }
 
-#
-# Function that stops the daemon/service
-#
-do_stop()
-{
-	# Return
-	#   0 if daemon has been stopped
-	#   1 if daemon was already stopped
-	#   2 if daemon could not be stopped
-	#   other if a failure occurred
-	start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME
-	RETVAL="$?"
-	[ "$RETVAL" = 2 ] && return 2
-	# Wait for children to finish too if this is a daemon that forks
-	# and if the daemon is only ever run from this initscript.
-	# If the above conditions are not satisfied then add some other code
-	# that waits for the process to drop all resources that could be
-	# needed by services started subsequently.  A last resort is to
-	# sleep for some time.
-	start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
-	[ "$?" = 2 ] && return 2
-	# Many daemons don't delete their pidfiles when they exit.
-	rm -f $PIDFILE
-	return "$RETVAL"
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc -p ${pidfile} -d ${STOP_TIMEOUT} $supervisord
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -rf ${lockfile} ${pidfile}
 }
 
-#
-# Function that sends a SIGHUP to the daemon/service
-#
-do_reload() {
-	#
-	# If the daemon can reload its configuration without
-	# restarting (for example, when it is sent a SIGHUP),
-	# then implement that here.
-	#
-	start-stop-daemon --stop --signal 1 --quiet --pidfile $PIDFILE --name $NAME
-	return 0
+reload() {
+    echo -n $"Reloading $prog: "
+    LSB=1 killproc -p $pidfile $supervisord -HUP
+    RETVAL=$?
+    echo
+    if [ $RETVAL -eq 7 ]; then
+        failure $"$prog reload"
+    else
+        $supervisorctl $OPTIONS status
+    fi
+}
+
+restart() {
+    stop
+    start
 }
 
 case "$1" in
-  start)
-	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
-	do_start
-	case "$?" in
-		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
-		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
-	esac
-	;;
-  stop)
-	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
-	do_stop
-	case "$?" in
-		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
-		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
-	esac
-	;;
-  #reload|force-reload)
-	#
-	# If do_reload() is not implemented then leave this commented out
-	# and leave 'force-reload' as an alias for 'restart'.
-	#
-	#log_daemon_msg "Reloading $DESC" "$NAME"
-	#do_reload
-	#log_end_msg $?
-	#;;
-  restart|force-reload)
-	#
-	# If the "reload" option is implemented then remove the
-	# 'force-reload' alias
-	#
-	log_daemon_msg "Restarting $DESC" "$NAME"
-	do_stop
-	case "$?" in
-	  0|1)
-		do_start
-		case "$?" in
-			0) log_end_msg 0 ;;
-			1) log_end_msg 1 ;; # Old process is still running
-			*) log_end_msg 1 ;; # Failed to start
-		esac
-		;;
-	  *)
-	  	# Failed to stop
-		log_end_msg 1
-		;;
-	esac
-	;;
-  *)
-	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
-	echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload}" >&2
-	exit 3
-	;;
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status -p ${pidfile} $supervisord
+        RETVAL=$?
+        [ $RETVAL -eq 0 ] && $supervisorctl $OPTIONS status
+        ;;
+    restart)
+        restart
+        ;;
+    condrestart|try-restart)
+        if status -p ${pidfile} $supervisord >&/dev/null; then
+          stop
+          start
+        fi
+        ;;
+    force-reload|reload)
+        reload
+        ;;
+    *)
+        echo $"Usage: $prog {start|stop|restart|condrestart|try-restart|force-reload|reload}"
+        RETVAL=2
 esac
 
-:
+exit $RETVAL
