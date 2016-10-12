@@ -43,6 +43,7 @@ Plugin 'xolox/vim-misc'
 Plugin 'vim-scripts/lua.vim'
 Plugin 'vim-scripts/gtags.vim'
 Plugin 'chase/vim-ansible-yaml'
+Plugin 'sukima/xmledit'
 
 call vundle#end()
 
@@ -70,3 +71,7 @@ autocmd BufWritePre * :%s/\s\+$//e
 let GtagsCscope_Auto_Load = 1
 let CtagsCscope_Auto_Map = 1
 let GtagsCscope_Quiet = 1
+
+" xml
+let g:xml_syntax_folding=1
+au FileType xml setlocal foldmethod=syntax
