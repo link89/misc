@@ -1,0 +1,46 @@
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+
+<generatorConfiguration>
+    <context id="demo" targetRuntime="MyBatis3">
+        <commentGenerator>
+            <!--生成的注释中是否包含生成日期,true为不包含-->
+            <property name="suppressDate" value="true"/>
+            <!--生成代码中是否包含注释,true为不包含-->
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+        <!--数据库连接信息-->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.1/db"
+                        userId="" password=""/>
+
+        <!--用来表示JDBC和java类型之间的转换,forceBigDecimals表示是否强制使用BigDecimal表示所有的十进制和数值字段-->
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <!-- 生成实体类,targetProject是项目路径,targetPackage是存放包的位置 -->
+        <javaModelGenerator
+                targetPackage="com.github.link89.domain"
+                targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </javaModelGenerator>
+        <!-- 映射文件存放位置 -->
+        <sqlMapGenerator targetPackage="mapper"
+                         targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+        <!-- 生成DAO的类文件 -->
+        <javaClientGenerator type="XMLMAPPER"
+                             targetPackage="com.github.link89.dao"
+                             targetProject="src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+        <table tableName="User" domainObjectName="User" catalog="" >
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+    </context>
+</generatorConfiguration>

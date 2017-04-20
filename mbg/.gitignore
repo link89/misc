@@ -1,0 +1,13 @@
+target
+.DS_Store
+~$*
+.classpath
+.project
+.settings
+*.iml
+*.ipr
+*.iws
+*.ids
+.idea/*
+env
+env.sh
