@@ -13,9 +13,11 @@
         </commentGenerator>
 
         <!--数据库连接信息-->
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://127.0.0.1/db"
-                        userId="" password=""/>
+        <jdbcConnection
+                driverClass="com.mysql.jdbc.Driver"
+                connectionURL="${mybatis.generator.jdbcURL}"
+                userId="${mybatis.generator.jdbcUserId}"
+                password="${mybatis.generator.jdbcPassword}"/>
 
         <!--用来表示JDBC和java类型之间的转换,forceBigDecimals表示是否强制使用BigDecimal表示所有的十进制和数值字段-->
         <javaTypeResolver>
@@ -39,7 +41,7 @@
                              targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
-        <table tableName="User" domainObjectName="User" catalog="" >
+        <table tableName="User" domainObjectName="User">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
     </context>
