@@ -7,7 +7,7 @@ backports.ssl-match-hostname==3.5.0.1
 billiard==3.3.0.23
 bitarray==0.8.1
 celery==3.1.23
-certifi==2016.2.28
+certifi==2022.12.7
 chartkick==0.4.2
 croniter==0.3.12
 dill==0.2.5
